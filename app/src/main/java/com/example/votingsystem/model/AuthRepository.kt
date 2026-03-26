@@ -18,7 +18,7 @@ class AuthRepository{
                 if (response.isSuccessful) {
                     Result.success(response.body()!!)
                 } else {
-                    Result.failure(Exception("Login failed"))
+                    Result.failure(Exception("Error!! Something is Wrong"))
                 }
             }catch (e: Exception){
                 Result.failure(e)
@@ -26,4 +26,5 @@ class AuthRepository{
         }
     }
 }
+
 
