@@ -7,7 +7,7 @@ object RetrofitClient{
 
     private const val BASE_URL = "https://vote.legscraft.co.ke/api/"
 
-    val api: ApiService by lazy {
+    val authApi: ApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
