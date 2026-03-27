@@ -1,0 +1,28 @@
+package com.example.votingsystem.util
+
+import android.content.Context
+import android.content.SharedPreferences
+
+class TokenManager(context: Context) {
+    private val prefs: SharedPreferences = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
+
+    companion object {
+        private const val KEY_TOKEN = "jwt_token"
+    }
+
+    fun saveToken(token: String) {
+        prefs.edit().putString(KEY_TOKEN, token).apply()
+    }
+
+    fun getToken(): String? {
+        return prefs.getString(KEY_TOKEN, null)
+    }
+
+    fun clearToken() {
+        prefs.edit().clear().apply()
+    }
+
+    fun getAuthHeader(): String? {
+        return getToken()?.let { "Bearer $it" }
+    }
+}

@@ -1,5 +1,6 @@
 package com.example.votingsystem.interfaces.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -56,6 +57,10 @@ import com.example.votingsystem.model.LoginViewModel
 fun LoginScreen(viewModel: LoginViewModel = viewModel(),
                 onLoginSuccess: () -> Unit
 ) {
+
+    BackHandler(enabled = true) {
+        // Do nothing - app will close
+    }
 
 
     var admNo by  remember { mutableStateOf("") }

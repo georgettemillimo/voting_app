@@ -1,5 +1,7 @@
 package com.example.votingsystem.model
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.votingsystem.api.User
@@ -7,9 +9,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class LoginViewModel: ViewModel(){
+class LoginViewModel(application: Application): AndroidViewModel(application){
 
-    private val repository = AuthRepository()
+    private val repository = AuthRepository(application)
 
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
