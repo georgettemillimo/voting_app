@@ -18,7 +18,7 @@ class AuthRepository{
                 if (response.isSuccessful) {
                     Result.success(response.body()!!)
                 } else {
-                    Result.failure(Exception("Error!! Something is Wrong"))
+                    Result.failure(Exception("Error!! Try Again"))
                 }
             }catch (e: Exception){
                 Result.failure(e)

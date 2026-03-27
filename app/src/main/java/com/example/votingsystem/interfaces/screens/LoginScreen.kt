@@ -186,7 +186,7 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(),
 
             Spacer(Modifier.height(16.dp))
 
-            Text("Use Admission Number as username" + "\n" +"and password Provided", fontSize = 12.sp, fontWeight = FontWeight.Normal,
+            Text("Note: Use Admission Number as username" + "\n" +"and password Provided", fontSize = 12.sp, fontWeight = FontWeight.Normal,
                 color = Color.White, textAlign = TextAlign.Center
             )
         }
