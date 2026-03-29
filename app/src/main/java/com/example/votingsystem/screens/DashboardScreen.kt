@@ -1,17 +1,14 @@
-package com.example.votingsystem.interfaces.screens
+package com.example.votingsystem.screens
 
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
@@ -31,8 +28,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.votingsystem.DataClasses.MenuItem
 import com.example.votingsystem.R
 import com.example.votingsystem.model.NavDrawerViewmodel
 import kotlinx.coroutines.launch
@@ -56,8 +53,16 @@ fun DashboardScreen(viewModel: NavDrawerViewmodel = viewModel(),  onLogout: () -
                     items = listOf(
                         MenuItem(id = "home", title = "Home", icon = Icons.Default.Home),
                         MenuItem(id = "info", title = "Help", icon = Icons.Default.Info),
-                        MenuItem(id = "settings", title = "Settings", icon = Icons.Default.Settings),
-                        MenuItem(id = "Logout", title = "Sign Out", icon = Icons.AutoMirrored.Filled.Logout)
+                        MenuItem(
+                            id = "settings",
+                            title = "Settings",
+                            icon = Icons.Default.Settings
+                        ),
+                        MenuItem(
+                            id = "Logout",
+                            title = "Sign Out",
+                            icon = Icons.AutoMirrored.Filled.Logout
+                        )
                     ),
                     onMenuItemClick = { menuItem ->
                         when (menuItem.id) {

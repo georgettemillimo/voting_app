@@ -1,13 +1,9 @@
-package com.example.votingsystem.model
+package com.example.votingsystem.api
 
 import android.content.Context
-import com.example.votingsystem.api.LoginRequest
-import com.example.votingsystem.api.LoginResponse
-import com.example.votingsystem.api.RetrofitClient
 import com.example.votingsystem.util.TokenManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-
 
 class AuthRepository(private val context: Context){
     private val api = RetrofitClient.authApi
@@ -15,7 +11,7 @@ class AuthRepository(private val context: Context){
 
 
     suspend fun login(admNo: String, password: String): Result<LoginResponse>{
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
 
             try {
                 val response = api.login(LoginRequest(admNo, password))
@@ -23,11 +19,11 @@ class AuthRepository(private val context: Context){
                     response.body()?.let { loginResponse ->
                         tokenManager.saveToken(loginResponse.token)
                         Result.success(loginResponse)
-                    }?: Result.failure(Exception("Response body is null"))
+                    } ?: Result.failure(Exception("Response body is null"))
                 } else {
                     Result.failure(Exception("Error!! Try Again"))
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Result.failure(e)
             }
         }
@@ -50,5 +46,3 @@ class AuthRepository(private val context: Context){
         }
     }
 }
-
-

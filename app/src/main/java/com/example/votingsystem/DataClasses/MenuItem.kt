@@ -1,4 +1,4 @@
-package com.example.votingsystem.interfaces.screens
+package com.example.votingsystem.DataClasses
 
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -8,4 +8,3 @@ data class MenuItem(
     val icon: ImageVector
 
  )
-

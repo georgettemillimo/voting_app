@@ -1,4 +1,4 @@
-package com.example.votingsystem.interfaces.screens
+package com.example.votingsystem.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,7 +35,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.votingsystem.R
 import com.example.votingsystem.model.NavDrawerViewmodel
 import androidx.compose.foundation.clickable
-import com.example.votingsystem.interfaces.screens.MenuItem
+import com.example.votingsystem.DataClasses.MenuItem
 
 @Composable
 fun DrawerHeader(viewModel: NavDrawerViewmodel = viewModel()){

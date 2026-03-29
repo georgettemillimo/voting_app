@@ -8,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.votingsystem.interfaces.screens.DashboardScreen
-import com.example.votingsystem.interfaces.screens.LoginScreen
+import com.example.votingsystem.screens.DashboardScreen
+import com.example.votingsystem.screens.LoginScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

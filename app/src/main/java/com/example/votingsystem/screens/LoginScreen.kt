@@ -1,4 +1,4 @@
-package com.example.votingsystem.interfaces.screens
+package com.example.votingsystem.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
