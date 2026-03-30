@@ -8,8 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.votingsystem.screens.BallotScreen
 import com.example.votingsystem.screens.DashboardScreen
 import com.example.votingsystem.screens.LoginScreen
+import com.example.votingsystem.screens.VoteSuccessScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,8 +47,29 @@ fun VotingSystemApp() {
                         // Clear back stack so user can't go back to dashboard
                         popUpTo("dashboard") { inclusive = true }
                     }
+                },
+            )
+        }
+
+        composable("ballot") {
+            BallotScreen(
+                onVoteComplete = {
+                    navController.navigate("vote_success") {
+                        popUpTo("ballot") { inclusive = true }
+                    }
                 }
             )
         }
+
+        composable("vote_success") {
+            VoteSuccessScreen(
+                onReturnHome = {
+                    navController.navigate("dashboard") {
+                        popUpTo("vote_success") { inclusive = true }
+                    }
+                }
+            )
+        }
+
     }
 }

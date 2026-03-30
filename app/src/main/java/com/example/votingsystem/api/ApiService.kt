@@ -31,7 +31,7 @@ interface ApiService{
     @POST("submit_vote.php")
     suspend fun submitVote(
         @Header("Authorization") authHeader: String,
-        @Body voteRequest: VoteRequest
+        @Body voteRequest: Map<String, List<Int>> // Send as Map directly
     ): Response<VoteResponse>
 
     @POST("logout.php")
@@ -87,7 +87,7 @@ data class LogoutResponse(
 @SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class VoteRequest(
-    val votes: List<Int> // List of candidate IDs
+    val votes: Map<String, List<Int>>// List of candidate IDs
 )
 
 // VoteResponse.kt
@@ -95,5 +95,6 @@ data class VoteRequest(
 @Serializable
 data class VoteResponse(
     val success: Boolean,
-    val message: String
+    val message: String,
+    val error: String? = null
 )

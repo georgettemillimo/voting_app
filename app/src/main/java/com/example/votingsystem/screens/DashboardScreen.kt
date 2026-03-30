@@ -24,6 +24,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,14 +32,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.votingsystem.DataClasses.MenuItem
 import com.example.votingsystem.R
+import com.example.votingsystem.model.BallotViewModel
 import com.example.votingsystem.model.NavDrawerViewmodel
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.getValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(viewModel: NavDrawerViewmodel = viewModel(),  onLogout: () -> Unit) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    // Ballot ViewModel
+    val ballotViewModel: BallotViewModel = viewModel()
+    val submitState by ballotViewModel.submitState.collectAsState()
 
     Button(onClick = onLogout) {
         Text("Logout")
@@ -114,14 +121,14 @@ fun DashboardScreen(viewModel: NavDrawerViewmodel = viewModel(),  onLogout: () -
                     )
                 }
             ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "Welcome to Dashboard")
-                }
+                BallotScreen ( viewModel = ballotViewModel,
+                    onVoteComplete = {
+                        ballotViewModel.loadBallot()
+
+                    },
+                    modifier = Modifier.padding(innerPadding)
+
+                )
             }
         }
     )

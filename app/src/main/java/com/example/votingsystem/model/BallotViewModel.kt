@@ -21,113 +21,125 @@ class BallotViewModel(application: Application): AndroidViewModel(application){
     private val _ballotState = MutableStateFlow<BallotUiState>(BallotUiState.Loading)
     val ballotState: StateFlow<BallotUiState> = _ballotState.asStateFlow()
 
-    private val _selectedCandidates = MutableStateFlow<Map<Int, List<Int>>>(emptyMap())
-    val selectedCandidates: StateFlow<Map<Int, List<Int>>> = _selectedCandidates.asStateFlow()
+    private val _selectedCandidates = MutableStateFlow<Map<String, List<Int>>>(emptyMap())
+    val selectedCandidates: StateFlow<Map<String, List<Int>>> = _selectedCandidates.asStateFlow()
 
     private val _submitState = MutableStateFlow<SubmitState>(SubmitState.Idle)
     val submitState: StateFlow<SubmitState> = _submitState.asStateFlow()
 
-    fun loadBallot(){
+    fun loadBallot() {
         viewModelScope.launch {
             try {
                 _ballotState.value = BallotUiState.Loading
+
                 tokenManager.getAuthHeader()?.let { authHeader ->
                     val response = apiService.getBallot(authHeader)
+
                     if (response.isSuccessful) {
                         response.body()?.let { ballot ->
                             if (ballot.hasVoted) {
-                                _ballotState.value = BallotUiState.AlreadyVoted(ballot.message?:"You have already voted")
-                            }else{
-                                _ballotState.value = BallotUiState.Success(ballot.positions?: emptyList())
+                                _ballotState.value = BallotUiState.AlreadyVoted(ballot.message ?: "You have already voted")
+                            } else {
+                                _ballotState.value = BallotUiState.Success(ballot.positions ?: emptyList())
                             }
                         }
-                    } else{
-                        _ballotState.value = BallotUiState.Error("Error: Failed to load ballot")
+                    } else {
+                        _ballotState.value = BallotUiState.Error("Failed to load ballot")
                     }
+                } ?: run {
+                    _ballotState.value = BallotUiState.Error("Not authenticated")
+                }
 
-                }?: run {
-                    _ballotState.value = BallotUiState.Error("Error: Not Authenticated")
+            } catch (e: Exception) {
+                _ballotState.value = BallotUiState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun toggleCandidate(positionSlug: String, candidateId: Int, maxVote: Int) {
+        val current = _selectedCandidates.value.toMutableMap()
+        val positionSelections = current.getOrDefault(positionSlug, emptyList()).toMutableList()
+
+        if (positionSelections.contains(candidateId)) {
+            // Deselect
+            positionSelections.remove(candidateId)
+        } else {
+            // Select
+            if (maxVote == 1) {
+                // Single selection - replace
+                positionSelections.clear()
+                positionSelections.add(candidateId)
+            } else {
+                // Multiple selection - check limit
+                if (positionSelections.size < maxVote) {
+                    positionSelections.add(candidateId)
                 }
             }
-            catch (e: Exception){
-                _ballotState.value = BallotUiState.Error("Error: ${e.message}")
-
-            }
-        }
-    }
-
-    fun toggleCandidate(positionId: Int, candidateId: Int, maxVote: Int){
-        val currentSelection = _selectedCandidates.value.toMutableMap()
-        val positionsSelection = currentSelection.getOrDefault(positionId, emptyList()).toMutableList()
-        if (positionsSelection.contains(candidateId)){
-            //Deselect
-            positionsSelection.remove(candidateId)
-        }
-        else{
-            //Select
-            if (maxVote==1){
-
-                // Single selection - replace
-                positionsSelection.clear()
-                positionsSelection.add(candidateId)
-            }
-            else{
-                // Multiple selection - check limit
-               if (positionsSelection.size < maxVote){
-                   positionsSelection.add(candidateId)
-               }
-            }
-
         }
 
-        currentSelection[positionId] = positionsSelection
-        _selectedCandidates.value = currentSelection
 
+
+        if (positionSelections.isEmpty()) {
+            current.remove(positionSlug)
+        } else {
+            current[positionSlug] = positionSelections
+        }
+
+        _selectedCandidates.value = current
     }
 
-    fun resetPosition(positionId: Int){
-        val currentSelection = _selectedCandidates.value.toMutableMap()
-        currentSelection.remove(positionId)
-        _selectedCandidates.value = currentSelection
 
+    fun resetPosition(positionSlug: String) {
+        val current = _selectedCandidates.value.toMutableMap()
+        current.remove(positionSlug)
+        _selectedCandidates.value = current
     }
 
-    fun submitVote(){
+    fun isCandidateSelected(positionSlug: String, candidateId: Int): Boolean {
+        return _selectedCandidates.value[positionSlug]?.contains(candidateId) ?: false
+    }
+
+
+
+
+    fun submitVote() {
         viewModelScope.launch {
             try {
                 _submitState.value = SubmitState.Submitting
-                val allVotes = _selectedCandidates.value.values.flatten()
 
-                if (allVotes.isEmpty()){
+                val votes = _selectedCandidates.value
+
+                if (votes.isEmpty()) {
                     _submitState.value = SubmitState.Error("Please select at least one candidate")
                     return@launch
                 }
+
                 tokenManager.getAuthHeader()?.let { authHeader ->
-                    val response = apiService.submitVote(authHeader, VoteRequest(allVotes))
-                    if (response.isSuccessful && response.body()?.success == true){
-                        _submitState.value = SubmitState.Success(response.body()?.message?:"Vote submitted successfully")
+                    // Send exactly like web: {"ec-vice-chair": [1], "ec-chair": [2]}
+                    val response = apiService.submitVote(authHeader, votes)
 
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        _submitState.value = SubmitState.Success("Vote submitted successfully!")
+                    } else {
+                        val errorMsg = response.body()?.error
+                            ?: response.errorBody()?.string()
+                            ?: "Failed to submit"
+                        _submitState.value = SubmitState.Error(errorMsg)
                     }
-                    else{
-                        _submitState.value = SubmitState.Error("Error: Failed to submit vote")
-                    }
-
-                }?: run {
-                    _submitState.value = SubmitState.Error("Error: Not Authenticated")
+                } ?: run {
+                    _submitState.value = SubmitState.Error("Not authenticated")
                 }
 
-
-            }catch (e: Exception){
-                _submitState.value = SubmitState.Error("Error: ${e.message}")
+            } catch (e: Exception) {
+                _submitState.value = SubmitState.Error(e.message ?: "Unknown error")
             }
         }
-
     }
-    fun resetSubmitState(){
+
+    fun resetSubmitState() {
         _submitState.value = SubmitState.Idle
-
     }
-
+}
     sealed class BallotUiState{
         object Loading: BallotUiState()
         data class Success(val positions: List<Position>): BallotUiState()
@@ -144,4 +156,3 @@ class BallotViewModel(application: Application): AndroidViewModel(application){
 
     }
 
-}
